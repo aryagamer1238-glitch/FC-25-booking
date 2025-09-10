@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FC 25 Booking Service</title>
+
+    <!-- Razorpay Script -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <!-- Particles.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: #1a1a1a;
+            background-size: cover;
+            z-index: -1;
+        }
+
+        .container {
+            position: relative;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 10px;
+            max-width: 500px;
+            margin: 50px auto;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 15px 25px;
+            background-color: #F37254;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #e55c3c;
+        }
+
+        .parsec-link {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="particles-js"></div>
+
+    <div class="container">
+        <h1>FC 25 Booking Service</h1>
+        <form id="booking-form">
+            <input type="text" id="name" placeholder="Your Name" required>
+            <input type="email" id="email" placeholder="Your Email" required>
+            <input type="text" id="phone" placeholder="Phone Number" required>
+            <input type="date" id="date" required>
+            <select id="slot" required>
+                <option value="">Select Time Slot</option>
+                <option value="10AM - 1PM">10AM - 1PM</option>
+                <option value="1PM - 4PM">1PM - 4PM</option>
+                <option value="4PM - 7PM">4PM - 7PM</option>
+                <option value="7PM - 10PM">7PM - 10PM</option>
+                <option value="10PM - 1AM">10PM - 1AM</option>
+            </select>
+            <button type="button" onclick="startPayment()">Pay ₹20 & Book</button>
+        </form>
+
+        <div id="confirmation" class="parsec-link" style="display: none;">
+            ✅ Booking Confirmed!<br>
+            Access your FC 25 session here:  
+            <a href="https://parsec.app/your-session-link" target="_blank">Go to Parsec Session</a>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Particles.js
+        particlesJS('particles-js', {
+            "particles": {
+                "number": { "value": 80 },
+                "color": { "value": "#ffffff" },
+                "shape": { "type": "circle" },
+                "opacity": { "value": 0.5 },
+                "size": { "value": 3 },
+                "line_linked": { "enable": true, "distance": 150, "color": "#ffffff", "opacity": 0.4, "width": 1 },
+                "move": { "enable": true, "speed": 2 }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": { "enable": true, "mode": "repulse" },
+                    "onclick": { "enable": true, "mode": "push" }
+                },
+                "modes": {
+                    "repulse": { "distance": 100 },
+                    "push": { "particles_nb": 4 }
+                }
+            },
+            "retina_detect": true
+        });
+
+        // Razorpay Payment Flow
+        function startPayment() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const date = document.getElementById('date').value;
+            const slot = document.getElementById('slot').value;
+
+            if (!name || !email || !phone || !date || !slot) {
+                alert('Please fill all fields.');
+                return;
+            }
+
+            const options = {
+                "key": "YOUR_RAZORPAY_KEY_ID",
+                "amount": "20",
+                "currency": "INR",
+                "name": "FC 25 Booking",
+                "description": "3-Hour Slot Booking",
+                "handler": function (response){
+                    document.getElementById('booking-form').style.display = 'none';
+                    document.getElementById('confirmation').style.display = 'block';
+                },
+                "prefill": {
+                    "name": name,
+                    "email": email,
+                    "contact": phone
+                },
+                "theme": {
+                    "color": "#F37254"
+                }
+            };
+
+            const rzp = new Razorpay(options);
+            rzp.open();
+        }
+    </script>
+
+</body>
+</html>
